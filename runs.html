@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Individual agent run logs</title>
+<title>Kush's Data Aggregator &mdash; previous runs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+<style>
 <style>
   :root {
     --color-fg: #171717;
@@ -103,232 +104,124 @@
   .header .crumb .icon20 { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0; }
   .header .crumb .label { font-size: 14px; line-height: 20px; color: #171717; font-family: system-ui, sans-serif; }
 
-  /* ---------- Tabs row ---------- */
-  .toolbar {
-    margin-top: 39px;
-    min-height: 33px;
+  /* ---------- Runs page (frame "Individual Agent runs - default / hover") ---------- */
+  .rcontent {
+    width: 100%;
+    max-width: 1146px;
+    margin: 0 auto;
+    padding: 0 24px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 1242px) {
+    .rcontent { padding: 0; }
+  }
+  .header .back {
+    display: flex; align-items: center; gap: 10px;
+    background: none; border: none; padding: 0;
+    cursor: pointer;
+    font-family: system-ui, sans-serif;
+    font-size: 14px; line-height: 20px; color: #171717;
+    text-decoration: none;
+  }
+  .header .back:hover svg { stroke-opacity: 0.7; }
+
+  /* Filter bar */
+  .filters {
+    margin-top: 36px;
     flex-shrink: 0;
     display: flex; align-items: flex-start; justify-content: space-between;
     gap: 16px; flex-wrap: wrap;
   }
-  .tabs { display: flex; align-items: center; overflow: hidden; }
-  .tab {
-    height: 32px; min-width: 28px; max-width: 200px; padding: 0 10px;
-    display: inline-flex; align-items: center; justify-content: center;
-    border-radius: 9999px; position: relative;
-    border: 0.5px solid transparent;
-  }
-  .tab.active { background: #ECECED; }
-  .tab.active::before {
-    content: ""; position: absolute; inset: 0; border-radius: 9999px;
-    box-shadow: 0 0 0 0.5px rgba(0,0,0,0.09);
-  }
-  .tab .inner { display: flex; align-items: flex-start; gap: 4px; position: relative; }
-  .tab .label { font-size: 12px; line-height: 16px; font-weight: 500; color: #5C5C5E; white-space: nowrap; }
-  .tab.active .label { color: #1B1B1B; }
-  .tab .mini-avatar {
-    width: 16px; height: 16px; border-radius: 50%; position: relative; flex-shrink: 0;
-    background: rgba(29,29,31,0.08); border: 1px solid rgba(29,29,31,0.28);
-  }
-  .tab .mini-avatar span {
-    position: absolute; left: 3px; top: 1px;
-    font-size: 9px; line-height: 12px; font-weight: 600; color: #1D1D1F;
-    font-family: system-ui, sans-serif; text-align: center;
-  }
-  .controls { display: flex; align-items: flex-start; gap: 12px; }
-  .search-box {
+  .filters .group { display: flex; align-items: flex-start; gap: 8px; }
+  .filter-pill {
     height: 32px; padding: 0 12px; border-radius: 8px;
-    border: 1px solid #E6E6E6;
-    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    border: 1px solid #E6E6E6; background: #FFFFFF;
+    display: flex; align-items: center; gap: 6px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px; line-height: 18px; color: #4D4D4D;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 120ms ease;
   }
-  .search-box .placeholder { font-size: 14px; line-height: 18px; color: #4D4D4D; white-space: nowrap; font-family: system-ui, sans-serif; }
-  .filter-btn {
-    width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0;
-    background: #FFFFFF; outline: 1px solid #E6E6E6;
-    display: flex; align-items: center; justify-content: center;
+  .filter-pill:hover { background: #FAFAFA; }
+  .btn-edit-agent {
+    height: 32px; padding: 0 14px; border-radius: 6px;
+    background: #FFFFFF; border: none; outline: 1px solid #E6E6E6;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px; line-height: 18px; font-weight: 600; color: #4D4D4D;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 120ms ease;
   }
-  .primary-btn {
+  .btn-edit-agent:hover { background: #FAFAFA; }
+  .btn-run-agent {
     height: 32px; padding: 0 14px; border-radius: 8px;
-    background: #171717; display: flex; align-items: center; gap: 6px;
+    background: #171717; border: none;
+    display: flex; align-items: center; gap: 6px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px; line-height: 18px; font-weight: 600; color: #FFFFFF;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 120ms ease;
   }
-  .primary-btn .label { font-size: 14px; line-height: 18px; font-weight: 600; color: #FFFFFF; font-family: system-ui, sans-serif; }
+  .btn-run-agent:hover { background: #000000; }
 
-  /* ---------- Table ---------- */
-  /* The page scrolls vertically (sticky header, fixed rail).
-     Horizontal scroll only kicks in when the viewport is too narrow for the dot strip. */
-  .table-scroll { margin-top: 31px; overflow-x: auto; flex-shrink: 0; }
-  .table { min-width: 894px; }
-  .thead, .row {
+  /* Runs table */
+  .runs-scroll { margin-top: 36px; overflow-x: auto; flex-shrink: 0; }
+  .runs { min-width: 700px; }
+  .rhead, .rrow {
     display: grid;
-    grid-template-columns: minmax(200px, 1fr) 432px 140px 93px 49px;
+    grid-template-columns: 49px 190px 1fr 101px;
     align-items: center;
   }
-  .thead { height: 36px; }
-  .thead .label { font-size: 12px; line-height: 16px; font-weight: 450; font-variation-settings: 'wght' 450; color: #5C5C5E; white-space: nowrap; }
-  .h-name { padding: 0 12px; }
-  .h-runlogs { padding: 0 22px; }
-  .h-owner { padding-left: 6px; padding-right: 12px; }
-  .h-modified, .h-action { padding: 0 6px; }
+  .rhead { height: 36px; }
+  .rhead .label { font-size: 12px; line-height: 16px; font-weight: 450; font-variation-settings: 'wght' 450; color: #5C5C5E; white-space: nowrap; }
+  .rh-time { padding: 0 12px; }
+  .rh-status { padding: 0 22px; }
+  .rh-duration { padding: 0 6px; }
 
-  .row {
+  .rrow {
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 120ms ease;
   }
-  .row:hover { background: #F7F7F7; }
+  .rrow:hover { background: #F7F7F7; }
 
-  .cell { height: 48px; display: flex; align-items: center; min-width: 0; }
-
-  .cell-name { padding: 0 12px; gap: 8px; }
-  .cell-name .status-dot { width: 8px; height: 8px; border-radius: 100px; flex-shrink: 0; }
-  .cell-name .status-dot.green { background: var(--green); }
-  .cell-name .status-dot.dim { background: #DDDDDD; }
-  .cell-name .status-dot.gray { background: #A8A8A8; }
-  .cell-name .status-dot.loading { background: transparent; border: 1px dotted #A8A8A8; animation: spin 1.6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .cell-name .name-wrap { display: flex; align-items: center; gap: 4px; min-width: 0; }
-  .cell-name .name {
+  .rcell { height: 48px; display: flex; align-items: center; min-width: 0; }
+  .rcell-chevron { padding: 0 6px; justify-content: center; }
+  .rcell-time { padding: 0 12px; gap: 4px; }
+  .rcell-time .time {
     font-size: 13px; line-height: 16px; font-weight: 500; color: #1B1B1B;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .cell-name.dim .name { color: #DDDDDD; }
-  .cell-name.gray .name { color: #A8A8A8; }
-  .cell-name svg { flex-shrink: 0; }
-
-  /* Hover-revealed tags + report button (from Paper "hover" frame) */
-  .hover-meta {
-    display: none; align-items: center; gap: 45px;
-    margin-left: 4px; min-width: 0; overflow: hidden;
-  }
-  .row:hover .hover-meta {
-    display: flex;
-    animation: meta-in 140ms ease both;
-  }
-  /* Full name always visible on hover — the tag pills clip instead. */
-  .row:hover .cell-name .name-wrap { flex-shrink: 0; }
-  @keyframes meta-in {
-    from { opacity: 0; transform: translateX(-3px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  .tags { display: flex; align-items: center; gap: 4px; min-width: 0; }
-  .tag {
+  .rcell-time svg { flex-shrink: 0; }
+  .rcell-status { padding: 0 22px; }
+  .status-chip {
     height: 24px; padding: 0 10px; border-radius: 100px; flex-shrink: 0;
-    display: flex; align-items: center;
+    display: flex; align-items: center; gap: 6px;
     box-shadow: inset 0 0 0 1px #D4D4D4;
     font-size: 12px; line-height: 16px; font-weight: 500; color: #404040;
     white-space: nowrap;
   }
-  .report-btn {
-    width: 24px; height: 24px; border-radius: 999px; flex-shrink: 0;
-    background: #171717; border: none; padding: 0;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: transform 120ms ease;
+  .status-chip .sq { width: 6px; height: 6px; border-radius: 3px; flex-shrink: 0; }
+  .status-chip.completed .sq { background: #73A20D; }
+  .status-chip.inprogress .sq { background: #0688FF; }
+  .status-chip.failed {
+    box-shadow: inset 0 0 0 1px #F3B4B4;
+    color: #C40C0C;
   }
-  .report-btn:hover { transform: scale(1.1); }
-  .report-btn:active { transform: scale(0.95); }
-
-
-  .cell-runlogs { padding: 0 22px; }
-  .dots { display: flex; align-items: flex-start; gap: 2px; }
-  .dots .d { width: 8px; height: 8px; border-radius: 100px; flex-shrink: 0; }
-
-  .cell-owner { padding: 0 6px; gap: 4px; }
-  .avatar {
-    width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .avatar span { font-size: 8px; line-height: 7px; font-weight: 600; font-family: system-ui, sans-serif; }
-  .cell-owner .owner-name {
-    font-size: 12px; line-height: 15px; color: #2F2F31;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
-  }
-  .cell-owner.dim .owner-name { color: #DDDDDD; }
-
-  .cell-modified { padding: 0 6px; }
-  .cell-modified .date {
-    margin-left: 8px; font-size: 12px; line-height: 16px;
-    font-weight: 450; font-variation-settings: 'wght' 450; color: #2F2F31; white-space: nowrap;
-  }
-  .cell-modified.dim .date { color: #DDDDDD; }
-
-  .cell-action { padding: 0 6px; justify-content: center; gap: 6px; }
-
-  /* Frame "Debug": history button sits a fixed 45px after the dot strip. */
-  .cell-runlogs { gap: 45px; }
-  .hover-history {
-    width: 24px; height: 24px; border-radius: 999px; flex-shrink: 0;
-    background: #171717; border: none; padding: 0;
-    display: none; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: transform 120ms ease;
-  }
-  .row:hover .hover-history { display: flex; animation: meta-in 140ms ease both; }
-  .hover-history:hover { transform: scale(1.1); }
-
-  .draft-pill {
-    height: 20px; padding: 0 8px; border-radius: 999px; flex-shrink: 0;
-    display: flex; align-items: center;
-    background: #F2F2F2;
-    font-family: system-ui, sans-serif;
-    font-size: 10px; line-height: 14px; font-weight: 600; color: #4D4D4D;
-  }
-
-  /* ---------- Must have agents (frame "ai suggestions new") ---------- */
-  .must-have { margin-top: 68px; margin-bottom: 48px; flex-shrink: 0; }
-  .must-have-title {
+  .status-chip.failed .sq { background: #E90E0E; }
+  .rcell-duration { padding-left: 6px; padding-right: 22px; }
+  .rcell-duration .dur {
     margin-left: 8px;
-    font-size: 13px; line-height: 16px; font-weight: 500;
-    color: #5C5C5E;
+    font-size: 12px; line-height: 16px;
+    font-weight: 450; font-variation-settings: 'wght' 450; color: #2F2F31;
+    white-space: nowrap;
   }
-  .must-have-cards {
-    margin-top: 12px;
-    display: flex;
-    gap: 12px;
-  }
-  .mh-card {
-    flex: 1;
-    min-width: 0;
-    height: 105px;
-    padding: 12px 11px;
-    border-radius: 12px;
-    border: 1px solid #E6E6E6;
-    background: #FFFFFF;
-    cursor: pointer;
-    transition: border-color 120ms ease, box-shadow 120ms ease;
-  }
-  .mh-card:hover { border-color: #D4D4D4; box-shadow: 0 1px 4px rgba(15,17,40,0.05); }
-  .mh-badge {
-    display: inline-flex; align-items: center;
-    height: 22px;
-    gap: 5px;
-    padding: 0 9px 0 7px;
-    border-radius: 100px;
-    background: #F2F2F2;
-    font-size: 12px; line-height: 16px; letter-spacing: 0.24px;
-    color: #3D3D3D;
-  }
-  .mh-badge svg { flex-shrink: 0; }
-  .mh-body { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
-  .mh-title { font-size: 12px; line-height: 20px; font-weight: 600; color: #1D1D1F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mh-sub { font-size: 12px; line-height: 16px; color: #626273; }
-  .mh-when { font-size: 12px; line-height: 15px; color: rgba(98,98,115,0.5); }
-
-  /* ---------- Footer ---------- */
-  /* Design: table(907) + 8px -> footer block 48px tall -> 37px white to frame edge (1000). */
-  .footer {
-    margin-top: 0;
-    padding: 16px 0;
-    margin-bottom: 0;
-    flex-shrink: 0;
-    display: flex; align-items: flex-start; justify-content: space-between;
-  }
-  .pager { position: relative; width: 134px; height: 16px; flex-shrink: 0; }
-  .pager svg { position: absolute; top: 0; overflow: visible; }
-  .pager .txt { position: absolute; left: 20px; top: 1px; font-size: 10px; line-height: 14px; color: #4D4D4D; white-space: nowrap; }
-  .rows-per-page { position: relative; width: 107px; height: 16px; flex-shrink: 0; }
-  .rows-per-page .txt { position: absolute; left: 0; top: 1px; font-size: 10px; line-height: 14px; color: #4D4D4D; white-space: pre; }
-  .rows-per-page svg { position: absolute; left: 91px; top: 0; overflow: visible; }
 </style>
 </head>
 <body>
@@ -344,7 +237,12 @@
           <path d="M5.6 1.5 L5.6 14.5" fill="#000000" stroke="#666666"/>
         </svg>
       </div>
-      <div class="label">Agents</div>
+      <a class="back" href="index.html">
+        <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.9 3.2 L5.3 8 L9.9 12.8" fill="none" stroke="#171717" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Agents / Kush's Data Aggregator's previous runs</span>
+      </a>
     </div>
   </div>
 
@@ -432,270 +330,99 @@
     <div class="rail-avatar"><div class="circle">M</div></div>
   </div>
 
-  <div class="content">
+  <div class="rcontent">
 
-  <!-- Tabs + controls -->
-  <div class="toolbar">
-    <div class="tabs">
-      <div class="tab active">
-        <div class="inner">
-          <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="8" cy="8" r="5.555" fill="none" stroke="#171717" stroke-width="1.3"/>
-            <rect x="6.666" y="5.778" width="1.334" height="2.666" rx="0.75" fill="#171717"/>
-            <rect x="9.778" y="5.778" width="1.334" height="2.666" rx="0.75" fill="#171717"/>
-          </svg>
-          <div class="label">All</div>
-        </div>
-      </div>
-      <div class="tab">
-        <div class="inner">
-          <div class="mini-avatar"><span>M</span></div>
-          <div class="label">My Agents</div>
-        </div>
-      </div>
-      <div class="tab">
-        <div class="inner">
-          <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.493 1.827L2 5.333" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 2v3.333h3.333" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 4.667v3.333l2.667 1.333" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <div class="label">Agent Runs</div>
-        </div>
-      </div>
-      <div class="tab">
-        <div class="inner">
-          <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14.427 2.427l-0.854-0.854a0.807 0.807 0 0 0-1.146 0L1.573 12.427a0.807 0.807 0 0 0 0 1.146l0.854 0.854a0.8 0.8 0 0 0 1.146 0L14.427 3.573a0.8 0.8 0 0 0 0-1.146" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M9.333 4.667l2 2M3.333 4v2.667M12.667 9.333v2.667M6.667 1.333v1.334M4.667 5.333H2M14 10.667h-2.667M7.333 2H6" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <div class="label">AI Suggestions</div>
-        </div>
-      </div>
+  <!-- Filters + actions -->
+  <div class="filters">
+    <div class="group">
+      <button class="filter-pill" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M6.25 12.5a0.625 0.625 0 0 0 0.346 0.559l1.25 0.625A0.625 0.625 0 0 0 8.75 13.125v-4.375a1.25 1.25 0 0 1 0.323-0.838L13.587 2.919A0.625 0.625 0 0 0 13.125 1.875H1.875a0.625 0.625 0 0 0-0.464 1.044l4.516 4.993A1.25 1.25 0 0 1 6.25 8.75z" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        By status
+        <svg width="16" height="16" viewBox="0 0 29.538 29.538" xmlns="http://www.w3.org/2000/svg"><path d="M7.385 11.078l7.384 7.385 7.385-7.385" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="filter-pill" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M6.25 12.5a0.625 0.625 0 0 0 0.346 0.559l1.25 0.625A0.625 0.625 0 0 0 8.75 13.125v-4.375a1.25 1.25 0 0 1 0.323-0.838L13.587 2.919A0.625 0.625 0 0 0 13.125 1.875H1.875a0.625 0.625 0 0 0-0.464 1.044l4.516 4.993A1.25 1.25 0 0 1 6.25 8.75z" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        By review
+        <svg width="16" height="16" viewBox="0 0 29.538 29.538" xmlns="http://www.w3.org/2000/svg"><path d="M7.385 11.078l7.384 7.385 7.385-7.385" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="filter-pill" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M5 1.25v1.875M10 1.25v1.875" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/><rect x="1.875" y="1.875" width="11.25" height="11.25" rx="2" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.875 5.625h11.25" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Start date
+        <svg width="16" height="16" viewBox="0 0 29.538 29.538" xmlns="http://www.w3.org/2000/svg"><path d="M7.385 11.078l7.384 7.385 7.385-7.385" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="filter-pill" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M5 1.25v1.875M10 1.25v1.875" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/><rect x="1.875" y="1.875" width="11.25" height="11.25" rx="2" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.875 5.625h11.25" fill="none" stroke="#4D4D4D" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        End date
+        <svg width="16" height="16" viewBox="0 0 29.538 29.538" xmlns="http://www.w3.org/2000/svg"><path d="M7.385 11.078l7.384 7.385 7.385-7.385" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
-    <div class="controls">
-      <div class="search-box">
-        <div class="placeholder">Find a agent</div>
-        <svg width="16" height="16" viewBox="0 0 25.6 25.6" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="11.2" cy="11.2" r="6.4" fill="none" stroke="#666666" stroke-width="1.8"/>
-          <path d="M16.533 16.533l4.8 4.8" fill="none" stroke="#666666" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="filter-btn">
-        <svg width="15" height="15" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6.25 12.5a0.625 0.625 0 0 0 0.346 0.559l1.25 0.625A0.625 0.625 0 0 0 8.75 13.125v-4.375a1.25 1.25 0 0 1 0.323-0.838L13.587 2.919A0.625 0.625 0 0 0 13.125 1.875H1.875a0.625 0.625 0 0 0-0.464 1.044l4.516 4.993A1.25 1.25 0 0 1 6.25 8.75z" fill="none" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="primary-btn">
-        <svg width="16" height="16" viewBox="0 0 27.429 27.429" xmlns="http://www.w3.org/2000/svg">
-          <path d="M13.714 5.715v16M5.714 13.715h16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <div class="label">Agents</div>
-      </div>
+    <div class="group">
+      <button class="btn-edit-agent" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M14.116 4.541a0.667 0.667 0 0 0-2.657-2.658L2.561 10.783a1.333 1.333 0 0 0-0.333 0.553l-0.881 2.901a0.333 0.333 0 0 0 0.416 0.415l2.902-0.88a1.333 1.333 0 0 0 0.553-0.331z" fill="none" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 3.333l2.667 2.667" fill="none" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Edit Agent
+      </button>
+      <button class="btn-run-agent" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M3.333 3.333a1.333 1.333 0 0 1 2.006-1.152l7.998 4.665a1.333 1.333 0 0 1 0.002 2.305l-8 4.667A1.333 1.333 0 0 1 3.333 12.666z" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Run Agent
+      </button>
     </div>
   </div>
 
-  <!-- Table -->
-  <div class="table-scroll"><div class="table" id="table"></div></div>
+  <!-- Runs table -->
+  <div class="runs-scroll"><div class="runs">
+    <div class="rhead">
+      <div></div>
+      <div class="rh-time"><div class="label">Run time</div></div>
+      <div class="rh-status"><div class="label">Status</div></div>
+      <div class="rh-duration"><div class="label">Duration</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 10:30 AM</div></div>
+      <div class="rcell rcell-status"><div class="status-chip completed"><div class="sq"></div>Completed</div></div>
+      <div class="rcell rcell-duration"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="6.667" x2="9.333" y1="1.333" y2="1.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" x2="10" y1="9.333" y2="7.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.333" r="5.333" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="dur">4m</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 9:30 AM</div><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="1 1 14 14"><circle cx="8" cy="8" r="5.834" fill="none" stroke="#666666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.334v-2.334M8 5.666h0.006" fill="none" stroke="#666666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-status"><div class="status-chip failed"><div class="sq"></div>Failed</div></div>
+      <div class="rcell rcell-duration"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="6.667" x2="9.333" y1="1.333" y2="1.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" x2="10" y1="9.333" y2="7.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.333" r="5.333" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="dur">16m 44s</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 9:30 AM</div><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="1 1 14 14"><circle cx="8" cy="8" r="5.834" fill="none" stroke="#666666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.334v-2.334M8 5.666h0.006" fill="none" stroke="#666666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-status"><div class="status-chip failed"><div class="sq"></div>Failed</div></div>
+      <div class="rcell rcell-duration"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="6.667" x2="9.333" y1="1.333" y2="1.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" x2="10" y1="9.333" y2="7.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.333" r="5.333" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="dur">16m 44s</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 8:30 AM</div></div>
+      <div class="rcell rcell-status"><div class="status-chip inprogress"><div class="sq"></div>In progress</div></div>
+      <div class="rcell rcell-duration"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="6.667" x2="9.333" y1="1.333" y2="1.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" x2="10" y1="9.333" y2="7.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.333" r="5.333" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="dur">8m 12s</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 8:30 AM</div></div>
+      <div class="rcell rcell-status"><div class="status-chip completed"><div class="sq"></div>Completed</div></div>
+      <div class="rcell rcell-duration"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="6.667" x2="9.333" y1="1.333" y2="1.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" x2="10" y1="9.333" y2="7.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.333" r="5.333" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="dur">8m 12s</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 8:30 AM</div></div>
+      <div class="rcell rcell-status"><div class="status-chip completed"><div class="sq"></div>Completed</div></div>
+      <div class="rcell rcell-duration"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="6.667" x2="9.333" y1="1.333" y2="1.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" x2="10" y1="9.333" y2="7.333" stroke="#6E6E74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.333" r="5.333" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="dur">8m 12s</div></div>
+    </div>
+    <div class="rrow">
+      <div class="rcell rcell-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 11.999l4-4-4-4" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="rcell rcell-time"><div class="time">Sep 08, 2026 · 8:30 AM</div></div>
+      <div class="rcell rcell-status"><div class="status-chip completed"><div class="sq"></div>Completed</div></div>
+      <div class="rcell rcell-duration"></div>
+    </div>
+  </div></div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <div class="pager">
-      <svg width="16" height="16" viewBox="0 0 16 16" style="left:0" xmlns="http://www.w3.org/2000/svg">
-        <path transform="translate(5 3)" d="M0 5 5 0l.7.7L1.4 5l4.3 4.3-.7.7z" fill="#BFC1CF"/>
-      </svg>
-      <div class="txt">Showing 1 - 8 of 115</div>
-      <svg width="16" height="16" viewBox="0 0 16 16" style="left:118px" xmlns="http://www.w3.org/2000/svg">
-        <path transform="translate(5.3 3)" d="M5.7 5 .7 10 0 9.3 4.3 5 0 .7.7 0z" fill="#4D4D4D"/>
-      </svg>
-    </div>
-    <div class="rows-per-page">
-      <div class="txt">Rows per page  10</div>
-      <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <path transform="translate(3 5.3)" d="M5 5.7 0 .7.7 0 5 4.3 9.3 0l.7.7z" fill="#4D4D4D"/>
-      </svg>
-    </div>
-  </div>
-
-
-  <!-- Must have agents -->
-  <div class="must-have">
-    <div class="must-have-title">Must have agents</div>
-    <div class="must-have-cards">
-    <div class="mh-card">
-      <div class="mh-badge"><svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="4.861" fill="none" stroke="#666666" stroke-width="1.2"/><rect x="5.833" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/><rect x="8.555" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/></svg>Visual agent</div>
-      <div class="mh-body">
-        <div class="mh-title">Daily AWS Usage Spike Alert</div>
-        <div class="mh-sub">AWS Service Usage</div>
-        <div class="mh-when">Everyday 9am</div>
-      </div>
-    </div>
-    <div class="mh-card">
-      <div class="mh-badge"><svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="4.861" fill="none" stroke="#666666" stroke-width="1.2"/><rect x="5.833" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/><rect x="8.555" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/></svg>Text agent</div>
-      <div class="mh-body">
-        <div class="mh-title">Daily Region Capacity Watch</div>
-        <div class="mh-sub">AWS Service Usage</div>
-        <div class="mh-when">Tuesday 1pm</div>
-      </div>
-    </div>
-    <div class="mh-card">
-      <div class="mh-badge"><svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="4.861" fill="none" stroke="#666666" stroke-width="1.2"/><rect x="5.833" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/><rect x="8.555" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/></svg>Visual agent</div>
-      <div class="mh-body">
-        <div class="mh-title">Weekly Top Customers by Usage</div>
-        <div class="mh-sub">AWS Service Usage</div>
-        <div class="mh-when">Friday 10am</div>
-      </div>
-    </div>
-    <div class="mh-card">
-      <div class="mh-badge"><svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="4.861" fill="none" stroke="#666666" stroke-width="1.2"/><rect x="5.833" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/><rect x="8.555" y="5.056" width="1.167" height="2.333" rx="0.75" fill="#666666"/></svg>Visual agent</div>
-      <div class="mh-body">
-        <div class="mh-title">Daily AWS Usage Spike Alert</div>
-        <div class="mh-sub">AWS Service Usage</div>
-        <div class="mh-when">Everyday 4pm</div>
-      </div>
-    </div>
-    </div>
-  </div>
-
-  </div><!-- /content -->
+  </div><!-- /rcontent -->
 
 </div><!-- /main -->
 </div><!-- /frame -->
-
-<script>
-(function () {
-  var GREEN = '#B9E95A', RED = '#FF777A', GRAY = '#DDDDDD', DIM = '#F3F3F3', WHITE = '#FFFFFF';
-
-  // Run-log patterns: array of 32 colors.
-  function fill(color) { var a = []; for (var i = 0; i < 32; i++) a.push(color); return a; }
-  function withMarks(base, marks) {
-    var a = fill(base);
-    Object.keys(marks).forEach(function (color) {
-      marks[color].forEach(function (i) { a[i] = color; });
-    });
-    return a;
-  }
-  var P1 = withMarks(GRAY, (function () { var m = {}; m[GREEN] = [25]; return m; })());
-  var P2 = withMarks(GRAY, (function () { var m = {}; m[GREEN] = [29]; return m; })());
-  var P3 = withMarks(GRAY, (function () { var m = {}; m[GREEN] = [25, 28, 29, 30]; return m; })());
-  var P6 = withMarks(GRAY, (function () {
-    var m = {}; m[RED] = [17];
-    m[GREEN] = []; for (var i = 18; i <= 31; i++) m[GREEN].push(i);
-    return m;
-  })());
-  var P7 = withMarks(GRAY, (function () {
-    var m = {}; m[RED] = [17]; m[GREEN] = [18, 19, 20, 23, 24, 25, 29, 30];
-    return m;
-  })());
-  var PDIM = fill(DIM), PWHITE = fill(WHITE);
-
-  // Avatar variants: [bg, border, letterColor, letter]
-  var AV = {
-    A:    ['#E4ECFF', '#BEC4F4', '#3538CD', 'A'],
-    S:    ['#FFEED3', '#ECC7A5', '#A83E00', 'S'],
-    J:    ['#EBF6D6', '#C8D7AD', '#4B6B1B', 'J'],
-    M:    ['#FBE6F5', '#E7B8DE', '#9E168E', 'M'],
-    Jdim: ['rgba(221,221,221,0.08)', 'rgba(221,221,221,0.38)', '#DDDDDD', 'J']
-  };
-
-  // Row spec: [nameState, infoSize(0|14|16), runlogPattern, avatarKey, dimmed]
-  var ROWS = [
-    ['green',   0,  P1,     'A',    false],
-    ['green',   0,  P2,     'S',    false],
-    ['green',   14, P3,     'J',    false],
-    ['dim',     0,  PDIM,   'Jdim', true ],
-    ['dim',     0,  PDIM,   'Jdim', true ],
-    ['green',   14, P6,     'A',    false],
-    ['green',   14, P7,     'S',    false],
-    ['loading', 0,  PWHITE, 'M',    false],
-    ['loading', 0,  PWHITE, 'J',    false],
-    ['green',   16, P7,     'M',    false],
-    ['green',   16, P7,     'A',    false],
-    ['dim',     0,  PDIM,   'Jdim', true ],
-    ['dim',     0,  PDIM,   'Jdim', true ]
-  ];
-
-  function infoIcon(size) {
-    if (size === 14) {
-      return '<svg width="14" height="14" viewBox="1 1 14 14" xmlns="http://www.w3.org/2000/svg">'
-        + '<circle cx="8" cy="8" r="5.834" fill="none" stroke="#666666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>'
-        + '<path d="M8 10.334v-2.334M8 5.666h0.006" fill="none" stroke="#666666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    }
-    return '<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">'
-      + '<circle cx="8" cy="8" r="6.667" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-      + '<path d="M8 10.667v-2.667M8 5.333h0.007" fill="none" stroke="#666666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  }
-
-  var CAL = function (fillColor) {
-    return '<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">'
-      + '<path d="M11 1C13.209 1 15 2.791 15 5V11C15 13.209 13.209 15 11 15H5C2.791 15 1 13.209 1 11V5C1 2.791 2.791 1 5 1H11ZM13.5 6H2.5V11C2.5 12.381 3.619 13.5 5 13.5H11C12.381 13.5 13.5 12.381 13.5 11V6Z" fill="' + fillColor + '"/></svg>';
-  };
-
-  var KEBAB = '<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">'
-    + '<circle cx="8" cy="8" r="0.667" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round"/>'
-    + '<circle cx="8" cy="3.333" r="0.667" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round"/>'
-    + '<circle cx="8" cy="12.667" r="0.667" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round"/></svg>';
-
-  // Report button icon (from Paper "hover" frame).
-  var REPORT_BTN = '<button class="report-btn" type="button" aria-label="Open report">'
-    + '<svg width="16" height="16" viewBox="14 2 16 16" xmlns="http://www.w3.org/2000/svg">'
-    + '<path d="M23.199 3.6C23.39 3.6 23.578 3.638 23.753 3.71C23.929 3.783 24.088 3.89 24.222 4.024L26.374 6.176C26.51 6.311 26.617 6.47 26.69 6.646C26.762 6.822 26.801 7.01 26.8 7.2M23.199 3.6L18.399 3.6C18.082 3.6 17.776 3.727 17.551 3.952C17.326 4.177 17.2 4.482 17.2 4.8L17.2 15.2C17.2 15.518 17.326 15.823 17.551 16.048C17.776 16.273 18.082 16.4 18.399 16.4L25.6 16.4C25.918 16.4 26.224 16.273 26.449 16.048C26.674 15.823 26.8 15.518 26.8 15.2L26.8 7.2M23.199 3.6L23.199 6.601C23.199 6.758 23.262 6.912 23.376 7.024C23.488 7.137 23.641 7.2 23.8 7.2L26.8 7.2M19.599 13.199L19.599 12.599M22 13.199L22 9.6M24.4 13.199L24.4 11.4" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>'
-    + '</svg></button>';
-
-  var HOVER_META = '<div class="hover-meta">'
-    + '<div class="tags"><div class="tag">Visual</div><div class="tag">Parameter</div></div>'
-    + REPORT_BTN + '</div>';
-
-  var html = '<div class="thead">'
-    + '<div class="h-name"><div class="label">Name</div></div>'
-    + '<div class="h-runlogs"><div class="label">Run logs</div></div>'
-    + '<div class="h-owner"><div class="label">Owner</div></div>'
-    + '<div class="h-modified"><div class="label">Last modified</div></div>'
-    + '<div class="h-action"><div class="label">Action</div></div>'
-    + '</div>';
-
-  ROWS.forEach(function (r) {
-    var state = r[0], info = r[1], pattern = r[2], avKey = r[3], dimmed = r[4];
-
-    var dotCls = state === 'green' ? 'green' : state === 'dim' ? 'dim' : state === 'gray' ? 'gray' : 'loading';
-    var nameCls = state === 'dim' ? ' dim' : state === 'gray' ? ' gray' : '';
-    var nameCell = '<div class="cell cell-name' + nameCls + '">'
-      + '<div class="status-dot ' + dotCls + '"></div>'
-      + '<div class="name-wrap"><div class="name">Trivy Vulnerability Remediation</div>'
-      + (info ? infoIcon(info) : '') + '</div>'
-      + (state === 'loading' ? '<div class="draft-pill">Draft</div>' : '')
-      + (state === 'green' ? HOVER_META : '')
-      + '</div>';
-
-    var dots = pattern.map(function (c) { return '<div class="d" style="background:' + c + '"></div>'; }).join('');
-    var logCell = '<div class="cell cell-runlogs"><div class="dots">' + dots + '</div>'
-      + (state === 'green' ? '<button class="hover-history" type="button" aria-label="Run history"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.493 1.827L2 5.333" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 2v3.333h3.333" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4.667v3.333l2.667 1.333" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' : '')
-      + '</div>';
-
-    var av = AV[avKey];
-    var ownerCell = '<div class="cell cell-owner' + (dimmed ? ' dim' : '') + '">'
-      + '<div class="avatar" style="background:' + av[0] + ';border:1px solid ' + av[1] + '"><span style="color:' + av[2] + '">' + av[3] + '</span></div>'
-      + '<div class="owner-name">Milan Korsos</div></div>';
-
-    var modCell = '<div class="cell cell-modified' + (dimmed ? ' dim' : '') + '">'
-      + CAL(dimmed ? '#DDDDDD' : '#6E6E74')
-      + '<div class="date">Aug 2026</div></div>';
-
-    var actionCell = '<div class="cell cell-action">' + KEBAB + '</div>';
-
-    html += '<div class="row">' + nameCell + logCell + ownerCell + modCell + actionCell + '</div>';
-  });
-
-  document.getElementById('table').innerHTML = html;
-
-  // History button -> individual agent runs page.
-  document.querySelectorAll('.hover-history').forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      window.location.href = 'runs.html';
-    });
-  });
-})();
-</script>
 </body>
 </html>
