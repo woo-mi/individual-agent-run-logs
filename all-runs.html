@@ -221,6 +221,74 @@
   .m-step { display: flex; align-items: center; gap: 4px; }
   .m-step .label { font-size: 12px; line-height: 130%; letter-spacing: 0.12px; color: #5C5C5E; white-space: nowrap; }
   .m-step svg { flex-shrink: 0; }
+
+  /* ---------- Expanded run card (frame "All Agents runs - default - open") ---------- */
+  .arun-head { cursor: pointer; }
+  .arun-chevron { transition: transform 200ms ease; }
+  .arun.open .arun-chevron { transform: rotate(90deg); }
+  .adetail {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 240ms ease;
+  }
+  .arun.open .adetail { grid-template-rows: 1fr; }
+  .adetail-clip { overflow: hidden; min-height: 0; }
+  .adetail-inner {
+    display: flex; flex-direction: column; gap: 17px;
+    padding-top: 14px;
+  }
+  .aline { height: 0.5px; background: #E6E6E6; }
+  .aev { display: flex; align-items: flex-start; gap: 8px; }
+  .aev .erail { width: 12px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+  .aev .dotbox { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .aev .dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+  .aev .dot.ok { background: #73A20D; }
+  .aev .dot.fail { background: #E90E0E; }
+  .aev .connector { width: 0.5px; height: 40px; flex-shrink: 0; background: #9B9B9B; }
+  .aev .ebody { flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: 8px; padding-top: 2px; }
+  .aev .etime {
+    min-width: 76px; flex-shrink: 0;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px; line-height: 16px; color: #777777;
+  }
+  .aev .emain { flex: 1; min-width: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .aev .etext { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .aev .etitle {
+    font-size: 12px; line-height: 15px; font-weight: 500; color: #171717;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .aev .etitle.fail { color: #C40C0C; }
+  .aev .esub {
+    font-size: 12px; line-height: 15px; color: rgba(86, 86, 86, 0.5);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .aev .eactions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+  .dbtn {
+    width: 32px; height: 32px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: none; padding: 0;
+    cursor: pointer;
+  }
+  .dbtn.wand { border-radius: 999px; background: #171717; transition: transform 120ms ease; }
+  .dbtn.wand:hover { transform: scale(1.08); }
+  .dbtn.ghost { border-radius: 8px; background: #FFFFFF; border: 1px solid #D4D4D4; transition: background-color 120ms ease; }
+  .dbtn.ghost:hover { background: #FAFAFA; }
+  .afooter { display: flex; align-items: center; justify-content: space-between; }
+  .dthumbs { display: flex; align-items: flex-start; gap: 8px; }
+  .dthumbs svg { cursor: pointer; }
+  .dthumbs svg:last-child { margin-top: 2px; }
+  .dthumbs svg:hover path { stroke: #171717; }
+  .btn-visualize {
+    height: 24px; padding: 0 8px; border-radius: 6px;
+    background: #FFFFFF; border: none; outline: 1px solid #E6E6E6;
+    display: flex; align-items: center; gap: 6px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px; line-height: 18px; font-weight: 600; color: #4D4D4D;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+  .btn-visualize:hover { background: #FAFAFA; }
 </style>
 </head>
 <body>
@@ -440,7 +508,49 @@
       + (i < STEPS.length - 1 ? SEP : '') + '</div>';
   }).join('');
 
+  // Expanded panel (frame "All Agents runs - default - open").
+  var WAND = '<button class="dbtn wand" type="button" aria-label="Fix with AI"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M14.427 2.426l-0.854-0.853a0.807 0.807 0 0 0-1.146 0L1.573 12.426a0.807 0.807 0 0 0 0 1.147l0.854 0.853a0.8 0.8 0 0 0 1.146 0L14.427 3.573a0.8 0.8 0 0 0 0-1.147" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.333 4.666l2 2M3.333 3.999v2.667M12.667 9.333v2.666M6.667 1.333v1.333M4.667 5.333H2M14 10.666h-2.667M7.333 1.999H6" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  var COMMENT = '<button class="dbtn ghost" type="button" aria-label="Comment"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M14.667 11.333a1.333 1.333 0 0 1-1.334 1.334H4.552a1.333 1.333 0 0 0-0.943 0.39l-1.468 1.468A0.473 0.473 0 0 1 1.333 14.191V3.333a1.333 1.333 0 0 1 1.334-1.333h10.666a1.333 1.333 0 0 1 1.334 1.333z" fill="none" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.667 7.333L11.333 7.333M4.667 10h4M4.667 4.667h5.333" fill="none" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  var DOC = '<button class="dbtn ghost" type="button" aria-label="Open report"><svg width="16" height="16" viewBox="12 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M21.199 1.6C21.39 1.6 21.578 1.638 21.753 1.71C21.929 1.783 22.088 1.89 22.222 2.024L24.374 4.176C24.51 4.311 24.617 4.47 24.69 4.646C24.762 4.822 24.801 5.01 24.8 5.2M21.199 1.6L16.399 1.6C16.082 1.6 15.776 1.727 15.551 1.952C15.326 2.177 15.2 2.482 15.2 2.8L15.2 13.2C15.2 13.518 15.326 13.823 15.551 14.048C15.776 14.273 16.082 14.4 16.399 14.4L23.6 14.4C23.918 14.4 24.224 14.273 24.449 14.048C24.674 13.823 24.8 13.518 24.8 13.2L24.8 5.2M21.199 1.6L21.199 4.601C21.199 4.758 21.262 4.912 21.376 5.024C21.488 5.137 21.641 5.2 21.8 5.2L24.8 5.2M17.599 11.199L17.599 10.599M20 11.199L20 7.6M22.4 11.199L22.4 9.4" fill="none" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  var THUMBS = '<div class="dthumbs">'
+    + '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M10 3.921L9.333 6.667h3.887a1.333 1.333 0 0 1 1.28 1.707l-1.553 5.333A1.333 1.333 0 0 1 11.667 14.667H2.667a1.333 1.333 0 0 1-1.334-1.333v-5.333a1.333 1.333 0 0 1 1.334-1.334h1.84a1.333 1.333 0 0 0 1.193-0.74L8 1.334a2.087 2.087 0 0 1 2 2.587Z" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.667 6.667v8" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    + '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6 12.081L6.667 9.334H2.78a1.333 1.333 0 0 1-1.28-1.707l1.553-5.333A1.333 1.333 0 0 1 4.333 1.334H13.333a1.333 1.333 0 0 1 1.334 1.333v5.334a1.333 1.333 0 0 1-1.334 1.333h-1.84a1.333 1.333 0 0 0-1.193 0.74L8 14.667a2.087 2.087 0 0 1-2-2.586Z" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.333 9.334V1.334" fill="none" stroke="#6E6E74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    + '</div>';
+  var VISUALIZE = '<button class="btn-visualize" type="button">'
+    + '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><rect width="4.667" height="4.667" x="1.75" y="1.749" rx="2" fill="none" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.083 6.416v2.333a1.167 1.167 0 0 0 1.167 1.167h2.333" fill="none" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect width="4.667" height="4.667" x="7.583" y="7.583" rx="2" fill="none" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    + 'Visualize run</button>';
+
+  var FAIL_SUB = 'Analysis failed. Error: Agent did not produce a loadable Canvas V2 report after follow-up prompt';
+  var EVENTS = [
+    { t: '8:30 PM', title: 'wake up',          sub: 'agent woke up on configured schedule', dot: 'ok' },
+    { t: '8:30 PM', title: 'schedule trigger', sub: 'trigger criteria met', dot: 'ok', actions: [COMMENT, DOC] },
+    { t: '8:36 PM', title: 'Data',             sub: FAIL_SUB, dot: 'fail', failTitle: true, actions: [WAND, COMMENT, DOC] },
+    { t: '8:36 PM', title: 'wake up',          sub: 'Agent woke up on configured schedule', dot: 'ok' },
+    { t: '8:37 PM', title: 'schedule trigger', sub: 'trigger criteria met', dot: 'ok' },
+    { t: '8:36 PM', title: 'analysis',         sub: FAIL_SUB, dot: 'fail', failTitle: true, actions: [WAND, COMMENT, DOC] }
+  ];
+
+  var timeline = EVENTS.map(function (ev, i) {
+    var last = i === EVENTS.length - 1;
+    return '<div class="aev">'
+      + '<div class="erail"><div class="dotbox"><div class="dot ' + ev.dot + '"></div></div>' + (last ? '' : '<div class="connector"></div>') + '</div>'
+      + '<div class="ebody"><div class="etime">' + ev.t + '</div>'
+      + '<div class="emain"><div class="etext">'
+      + '<div class="etitle' + (ev.failTitle ? ' fail' : '') + '">' + ev.title + '</div>'
+      + '<div class="esub">' + ev.sub + '</div></div>'
+      + (ev.actions ? '<div class="eactions">' + ev.actions.join('') + '</div>' : '')
+      + '</div></div></div>';
+  }).join('');
+
+  var detail = '<div class="adetail"><div class="adetail-clip"><div class="adetail-inner">'
+    + '<div class="aline"></div>'
+    + '<div>' + timeline + '</div>'
+    + '<div class="aline"></div>'
+    + '<div class="afooter">' + THUMBS + VISUALIZE + '</div>'
+    + '</div></div></div>';
+
   var card = '<div class="arun">'
+    + '<div class="arun-head">'
     + '<div class="arun-title">Sep 08, 2026, 9:00 AM</div>'
     + '<div class="arun-name">Ayush\'s Pipeline Report</div>'
     + '<div class="arun-meta">' + CHEVRON
@@ -449,11 +559,20 @@
     + '<div class="m-dur">' + STOPWATCH + '<div class="label">8m 14s</div></div>'
     + '<div class="m-dot">\u00B7</div>'
     + '<div class="m-steps">' + steps + '</div>'
-    + '</div></div>';
+    + '</div></div>'
+    + detail
+    + '</div>';
 
   var html = '';
   for (var i = 0; i < 6; i++) html += card;
-  document.getElementById('aruns').innerHTML = html;
+  var root = document.getElementById('aruns');
+  root.innerHTML = html;
+
+  root.querySelectorAll('.arun').forEach(function (run) {
+    run.querySelector('.arun-head').addEventListener('click', function () {
+      run.classList.toggle('open');
+    });
+  });
 })();
 </script>
 </body>
