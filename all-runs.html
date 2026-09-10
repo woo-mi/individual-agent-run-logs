@@ -139,6 +139,16 @@
 
   /* ---------- All Agent Runs page (frame "All Agents runs - default") ---------- */
   a.tab { text-decoration: none; cursor: pointer; }
+  .tcontent {
+    width: 100%;
+    max-width: 1162px;
+    margin: 0 auto;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+  @media (min-width: 1258px) {
+    .tcontent { padding: 0; }
+  }
   .acontent {
     width: 100%;
     max-width: 909px;
@@ -392,9 +402,8 @@
     <div class="rail-avatar"><div class="circle">M</div></div>
   </div>
 
-  <div class="acontent">
-
-  <!-- Tabs (frame "All Agents runs - default") -->
+  <!-- Tabs aligned with the list page's tab bar (frames moved them to x=163) -->
+  <div class="tcontent">
   <div class="toolbar">
     <div class="tabs">
       <a class="tab" href="index.html">
@@ -434,6 +443,9 @@
       </div>
     </div>
   </div>
+  </div><!-- /tcontent -->
+
+  <div class="acontent">
 
   <!-- Filters -->
   <div class="afilters">
