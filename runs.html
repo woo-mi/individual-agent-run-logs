@@ -279,7 +279,7 @@
     display: flex; align-items: center; gap: 8px;
   }
   .dbtn {
-    width: 32px; height: 32px; flex-shrink: 0;
+    width: 24px; height: 24px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     border: none; padding: 0;
     cursor: pointer;
@@ -537,7 +537,7 @@
         + '<div class="esub">' + ev.sub + '</div></div></div></div>';
       if (ev.actions) {
         // Timeline starts 13px into the panel; events are on a 60px rhythm.
-        var top = 13 + 60 * i + (ev.actions.length === 3 ? 2 : 8);
+        var top = 13 + 60 * i + 6;
         actions += '<div class="dactions" style="top:' + top + 'px">' + ev.actions.join('') + '</div>';
       }
     });
